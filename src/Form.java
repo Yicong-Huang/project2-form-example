@@ -2,6 +2,7 @@
 /* A servlet to display the contents of the MySQL movieDB database */
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
 
+@WebServlet(name = "FormServlet", urlPatterns = {"/form"})
 public class Form extends HttpServlet {
     public String getServletInfo() {
         return "Servlet connects to MySQL database and displays result of a SELECT";
