@@ -1,25 +1,29 @@
 
 /* A servlet to display the contents of the MySQL movieDB database */
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
-@WebServlet(name = "FormServlet", urlPatterns = {"/form"})
+// Declaring a WebServlet called FormServlet, which maps to url "/form"
+@WebServlet(name = "FormServlet", urlPatterns = "/form")
+
 public class Form extends HttpServlet {
+
     public String getServletInfo() {
         return "Servlet connects to MySQL database and displays result of a SELECT";
     }
 
     // Use http GET
-
     public void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws IOException, ServletException {
+            throws IOException {
         String loginUser = "mytestuser";
         String loginPasswd = "mypassword";
         String loginUrl = "jdbc:mysql://localhost:3306/moviedb";
@@ -29,66 +33,54 @@ public class Form extends HttpServlet {
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
-        out.println("<HTML><HEAD><TITLE>MovieDB: Found Records</TITLE></HEAD>");
-        out.println("<BODY><H1>MovieDB: Found Records</H1>");
+        // building page head with title
+        out.println("<html><head><title>MovieDB: Found Records</title></head>");
+
+        // building page body
+        out.println("<body><h1>MovieDB: Found Records</h1>");
 
 
         try {
-            //Class.forName("org.gjt.mm.mysql.Driver");
             Class.forName("com.mysql.jdbc.Driver").newInstance();
 
-            Connection dbcon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
+            // Create a new connection to database
+            Connection dbCon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
             // Declare our statement
-            Statement statement = dbcon.createStatement();
+            Statement statement = dbCon.createStatement();
 
+            // Retrieve parameter "name" from request, which refers to the value of <input name="name"> in index.html
             String name = request.getParameter("name");
-            String query = "SELECT * from stars where name like '" + name + "'";
+
+            // Generate a SQL query
+            String query = String.format("SELECT * from stars where name like '%s'", name);
 
             // Perform the query
             ResultSet rs = statement.executeQuery(query);
 
-            out.println("<TABLE border>");
+            // Create a html <table>
+            out.println("<table border>");
 
-            // Iterate through each row of rs
-            out.println("<tr>" +
-                    "<td>" + "ID" + "</td>" +
-                    "<td>" + "Name" + "</td>" +
-                    "</tr>");
+            // Iterate through each row of rs and create a table row <tr>
+            out.println("<tr><td>ID</td><td>Name</td></tr>");
             while (rs.next()) {
                 String m_ID = rs.getString("ID");
                 String m_Name = rs.getString("name");
-                out.println("<tr>" +
-                        "<td>" + m_ID + "</td>" +
-                        "<td>" + m_Name + "</td>" +
-                        "</tr>");
+                out.println(String.format("<tr><td>%s</td><td>%s</td></tr>", m_ID, m_Name));
             }
-            out.println("</TABLE>");
+            out.println("</table>");
 
+
+            // Close all structures
             rs.close();
             statement.close();
-            dbcon.close();
-        } catch (SQLException ex) {
-            while (ex != null) {
-                System.out.println("SQL Exception:  " + ex.getMessage());
-                ex = ex.getNextException();
-            }  // end while
-        }  // end catch SQLException
+            dbCon.close();
 
-        catch (Exception ex) {
-            out.println("<HTML>" +
-                    "<HEAD><TITLE>" +
-                    "MovieDB: Error" +
-                    "</TITLE></HEAD>\n<BODY>" +
-                    "<P>SQL error in doGet: " +
-                    ex.getMessage() + "</P></BODY></HTML>");
+        } catch (Exception ex) {
+
+            // Output Error Massage to html
+            out.println(String.format("<html><head><title>MovieDB: Error</title></head>\n<body><p>SQL error in doGet: %s</p></body></html>", ex.getMessage()));
             return;
         }
         out.close();
     }
-    
-    /* public void doPost(HttpServletRequest request, HttpServletResponse response)
-        throws IOException, ServletException
-    {
-	doGet(request, response);
-	} */
 }
