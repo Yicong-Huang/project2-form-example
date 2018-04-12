@@ -45,7 +45,8 @@ public class Form extends HttpServlet {
 
             // Create a new connection to database
             Connection dbCon = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
-            // Declare our statement
+
+            // Declare a new statement
             Statement statement = dbCon.createStatement();
 
             // Retrieve parameter "name" from request, which refers to the value of <input name="name"> in index.html

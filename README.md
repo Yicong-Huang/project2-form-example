@@ -1,6 +1,6 @@
 ## CS 122B Project 2 Form example
 
-This example shows how frontend and backend are separated by implementing a star list page.
+This example shows how HTML <form> works to send user input to backend.
 
 ### To run this example: 
 1. clone this repository using `git clone https://github.com/UCI-Chenli-teaching/project2-form-example.git`
@@ -10,5 +10,5 @@ This example shows how frontend and backend are separated by implementing a star
 5. You can run this project on Tomcat now.
 
 ### Brief Explanation
-`Form.java` is a Java servlet that talks to the database and generates the result form. It is formatted as a html table. 
+`Form.java` is a Java servlet that retrieves the data from HTML <form> and then talks to the database and generates the result HTML <table>
 
